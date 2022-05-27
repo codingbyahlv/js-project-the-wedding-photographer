@@ -1,0 +1,167 @@
+/* GENERAL */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #2A2E30;
+  color: white;
+  font-family: 'Oswald', sans-serif;
+}
+
+
+/* INTRO */
+#intro-page-section{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+  gap: 20px;
+}
+.intro-logo-h1 { 
+  font-size: 36px;
+  font-weight: 600;
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+.intro-logo-img{
+  width:80px;
+  height:80px;
+} 
+
+
+/* HEADER */
+#header-wrapper{
+  display: none;
+  justify-content: flex-end;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  width: 90%;
+  min-height: 8vh;
+  z-index: 2;
+}
+#menu-btn{
+background: none;
+border: none;
+}
+
+
+
+
+/*MAIN*/
+.main-wrapper{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 90%;
+  min-height: 92vh;
+}
+
+
+
+/*FOTO*/
+#take-photo-section,
+#your-photo-section {
+  display: none;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  min-height: 92vh;
+  padding-bottom: 29px;
+}
+video {
+  width: 342px; 
+  height: 291px;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.4);
+  border-radius: 0.5rem;
+  object-fit: fill; 
+} 
+canvas {
+  width: 342px; 
+  height: 291px;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.4);
+  border-radius: 0.5rem;
+}
+.camera-button{
+  width: 100%;
+  margin-top: 178px; 
+  padding: 24px 16px;
+  background: #ffffff;
+  border: none;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 22px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+
+
+/* GALLERI */
+#gallery-section {
+  display: none;
+  padding-top: 36px;
+  
+}
+#gallery{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+
+}
+.no-pics-message{
+  min-height: 80vh;
+  padding-top: 30vh;
+  font-weight: 500; 
+
+}
+.image-wrapper{
+  position: relative;
+}
+.gallery-img{
+  width: 163px;
+  height: 149px;
+}
+
+#remove-btn{
+  position: absolute;
+      top: 8px;
+      right: 8px;
+ 
+  background: none;
+  border: none;
+  color: white;
+}
+.trash{
+  height: 1rem;
+  width: 1rem;
+}
+
+@media screen and (min-width:450px){
+  #take-photo-section,
+  #your-photo-section {
+    justify-content: center;
+    width: 100%;
+  }
+  .camera-button{
+    margin-top: 40px;
+    width: 80%;
+  }
+  video{
+    width: 100%; 
+    height:auto;
+   
+  }
+
+}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>BRÖLLOPSFOTOGRAFEN</title>
+    <meta name="Bröllopsfotografen" content="Hjälper dina gäster att föreviga din dag">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="./icons/icon-192.png"/>
+    <link rel="stylesheet" href="./styles/style.css">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/2/2.2.1/iconify.min.js"></script>
+  </head>
+  <body>
+    <section id="intro-page-section">
+        <img class="intro-logo-img" src="./img/logo.png" alt="Company logotype" />
+        <h1 class="intro-logo-h1">Bröllopsfotografen</h1>
+    </section>
+
+    <header id="header-wrapper">
+      <!-- <article class="logo-wrapper">
+        <img class="logo-img" src="./img/logo.png" alt="" />
+        <h1 class="logo-h1">Bröllopsfotografen</h1>
+      </article> -->
+      <button id="menu-btn"><span class="iconify" data-icon="bi:grid-fill" style="color: white;" data-width="40"></span></button>
+    </header>
+
+    <main class="main-wrapper">
+      <section id="take-photo-section">
+        <video src="" id="camera" autoplay></video>
+        <button id="take-photo-btn" class="camera-button">Föreviga ett ögonblick</button>       
+      </section>
+
+      <section id="your-photo-section">
+        <canvas id="picture"></canvas>
+        <button id="new-photo-btn" class="camera-button">Ta nytt kort</button>
+      </section>
+
+      <section id="gallery-section">
+        <article id="gallery"></article>
+      </section>
+    </main>
+    
+    <script src="./index.js" async defer></script>
+  </body>
+</html>

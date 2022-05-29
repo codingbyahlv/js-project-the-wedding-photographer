@@ -1,5 +1,6 @@
- const API_KEY = '$2b$10$yW3fxf3SBSr.INGd5k9.qOK.2PnvlpAj2aWBcvRfui9vcAurz2HN6'
-//const API_KEY = process.env.övning-brollopsfotografen.API_KEY
+const API_KEY = '$2b$10$yW3fxf3SBSr.INGd5k9.qOK.2PnvlpAj2aWBcvRfui9vcAurz2HN6'
+//const API_KEY = process.env.API_KEY;
+
 
 const introPage = document.querySelector("#intro-page-section");
 const headerElem = document.querySelector("#header-wrapper");
@@ -151,7 +152,8 @@ async function getPhotosFromBin() {
 // - kör fetchen där hela den nya imagesBin skickas som body
 // - ta emot responsen
 async function syncBin() {
-    console.log('sync startar')
+    console.log('Dina bilder synkas...')
+    gallery.innerHTML = '<button class="modal-loader"><i class="fa fa-spinner fa-spin"></i></button>'
     let imagesBin = await getPhotosFromBin()
     const imagesLs = JSON.parse(localStorage.getItem('weddingGallery'));
     imagesBin = [...imagesLs]

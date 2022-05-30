@@ -77,7 +77,7 @@ async function savePhoto(newPhoto) {
 
     imgArray.push({image: newPhoto});
     localStorage.setItem('weddingGallery', JSON.stringify(imgArray));
-    createNotification ('Ditt foto är sparat i Local Storage');
+    createNotification ('Ditt foto är sparat i Local Storage!');
     if(navigator.onLine){
         syncBin()
     };

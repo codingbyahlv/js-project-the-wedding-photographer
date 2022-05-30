@@ -46,26 +46,38 @@ function openTakePhoto() {
 }
 
 /* TILLBAKA TILL KAMERAN */
+// - onclick för att öppna funktionen för att ta en ny bild
 newPhotoBtn.addEventListener('click', () => openTakePhoto());
 
+
+
+//OBS!!!! 
+//Lägg in en else för offline
 
 /* SPARAR NY BILD I LS (ny bild fr. onklick på "ta bild-knapp")*/
 // - OM (online)
 //      - hämta/uppdatera arrayen med senaste från json bin
+// - ANNARS 
+//      - hämta LS arrayen
 // - pusha in nya bilden
 // - arrayen spara till LS
 // - kalla på notis
 // - OM (online)
 //      - kalla på synka med json bin
 async function savePhoto(newPhoto) {
-    if(navigator.onLine){
-        imgArray = await getPhotosFromBin();
-    }
-    //console.log('imgArray innan push av ny bild',imgArray);
+    const imagesFromLs = JSON.parse(localStorage.getItem('weddingGallery'));
+    // if(navigator.onLine){
+    //     imgArray = await getPhotosFromBin();
+    // } else {
+    //     //hämta från LS och sätt till imgArrayen
+    //     imgArray = [...imagesFromLs]
+    // }
+
+    imgArray = [...imagesFromLs]
+
     imgArray.push({image: newPhoto});
-    //console.log('imgArray efter push efter tagen bild: ',imgArray);
     localStorage.setItem('weddingGallery', JSON.stringify(imgArray));
-    createNotification ('Ditt foto är sparat i LS');
+    createNotification ('Ditt foto är sparat i Local Storage');
     if(navigator.onLine){
         syncBin()
     };
@@ -74,12 +86,15 @@ async function savePhoto(newPhoto) {
 
 
 /* TA BILDEN VID KLICK */
+// - onclick på ta kort knappen
+// - rita upp bilden
+// - lagra bilden i en variabel och sätt formatet
+// - kalla på funktion för att visa tagen bild
+// - kalla på funktion för att spara bilden
 takePhotoBtn.addEventListener('click', () => {
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     const newImageData = canvas.toDataURL('image/png'); 
-    //öppnar för att visa tagen bild
     openYourPhoto();
-    //sparar bilden(newPhoto)
     savePhoto(newImageData);
 });
 
@@ -88,7 +103,8 @@ takePhotoBtn.addEventListener('click', () => {
 /* TA BORT KLICKAD BILD */
 // - OM (online)
 //      - hämta/uppdatera arrayen med senaste från json bin
-// - hämta LS arrayen
+// - ANNARS
+//      - hämta LS arrayen
 // - filtrera ut alla (och lägg i ny array) som inte matchar inskickad bild
 // - spara nya arrayen i LS
 // - kalla på notis
@@ -116,16 +132,16 @@ async function removeImage(inImage){
 };
 
 
-/* SKAPAR GALLERIET (bildarray fr. loadPhotos)*/
+/* VIEW - SKAPAR GALLERIET (bildarray fr. loadPhotos)*/
 // - töm ev kvarvarande bilder
-// - mappa ut alla bilder i arrayen inkl onklick för att ta bort
+// - mappa ut alla bilder i arrayen inkl onclick för att ta bort
 function createGallery(images){
     gallery.innerHTML = '';
     gallery.innerHTML = images
         .map((image) => 
-        `<div class="image-wrapper">
-            <img class="gallery-img" src="${image.image}" />
-            <button id="remove-btn" onclick="removeImage('${image.image}')"><span class="iconify trash" data-icon="fa:trash"></span></button> 
+            `<div class="image-wrapper">
+                <img class="gallery-img" src="${image.image}" />
+                <button id="remove-btn" onclick="removeImage('${image.image}')"><span class="iconify trash" data-icon="fa:trash"></span></button> 
             </div>`)
         .join("");
 };
@@ -145,15 +161,17 @@ async function getPhotosFromBin() {
     return imagesFromBin.images;
 };
 
+
 /* SYNKA MOT JSON BIN */
 // - hämta senaste från json bin
 // - hämta senaste från ls
 // - för varje objekt(bild) i ls pusha in i json bin variabeln
 // - kör fetchen där hela den nya imagesBin skickas som body
 // - ta emot responsen
+
 async function syncBin() {
     console.log('Dina bilder synkas...')
-    gallery.innerHTML = '<button class="modal-loader"><i class="fa fa-spinner fa-spin"></i></button>'
+    gallery.innerHTML = '<span class="modal-loader"><i class="fa fa-spinner fa-spin"></i></span>'
     let imagesBin = await getPhotosFromBin()
     const imagesLs = JSON.parse(localStorage.getItem('weddingGallery'));
     imagesBin = [...imagesLs]
@@ -168,7 +186,7 @@ async function syncBin() {
     });
 
     const data = await response.json();
-    console.log('Synkning klar!', data)    
+    console.log('Dina bilder är nu synkade!', data)    
 }
 
 
@@ -219,6 +237,7 @@ menuBtn.addEventListener('click',() => {
     }
 });
 
+
 /* SKAPAR NOTIS (text som skickas med vid resp ändamål) */
 function createNotification(text) {
     const icon = 'icons/icon-192.png'
@@ -236,6 +255,7 @@ window.addEventListener('load', async () => {
     Notification.requestPermission()
 });
 
+
 //Registrera SW
 window.addEventListener('load', async () => {
   if('serviceWorker' in navigator){
@@ -246,6 +266,7 @@ window.addEventListener('load', async () => {
       }
   }
 });
+
 
 //FÖRDRÖJNING FÖR ATT VISA INTROSIDAN
 window.addEventListener('load', () => {

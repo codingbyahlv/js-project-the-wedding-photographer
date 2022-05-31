@@ -23,8 +23,6 @@ let galleryOpen = false;
 const ctx = canvas.getContext('2d');
 let stream;
 
-//let imagesArray = [];
-//let imagesFromLs = JSON.parse(localStorage.getItem('weddingGallery'));
 let imgArray = [];
 
 //behövs denna ens????????
@@ -53,6 +51,7 @@ newPhotoBtn.addEventListener('click', () => openTakePhoto());
 
 //OBS!!!! 
 //Lägg in en else för offline
+// KLAR??
 
 /* SPARAR NY BILD I LS (ny bild fr. onklick på "ta bild-knapp")*/
 // - OM (online)
@@ -62,26 +61,17 @@ newPhotoBtn.addEventListener('click', () => openTakePhoto());
 // - pusha in nya bilden
 // - arrayen spara till LS
 // - kalla på notis
-// - OM (online)
-//      - kalla på synka med json bin
 async function savePhoto(newPhoto) {
     const imagesFromLs = JSON.parse(localStorage.getItem('weddingGallery'));
-    // if(navigator.onLine){
-    //     imgArray = await getPhotosFromBin();
-    // } else {
-    //     //hämta från LS och sätt till imgArrayen
-    //     imgArray = [...imagesFromLs]
-    // }
-
-    imgArray = [...imagesFromLs]
-
+    if(navigator.onLine){
+        await syncBin()
+        imgArray = await getPhotosFromBin();
+    } else {
+        imgArray = [...imagesFromLs]
+    }
     imgArray.push({image: newPhoto});
     localStorage.setItem('weddingGallery', JSON.stringify(imgArray));
-    createNotification ('Ditt foto är sparat i Local Storage!');
-    if(navigator.onLine){
-        syncBin()
-    };
-  
+    createNotification ('Ditt foto är sparat!');
 }
 
 
@@ -102,17 +92,19 @@ takePhotoBtn.addEventListener('click', () => {
 
 /* TA BORT KLICKAD BILD */
 // - OM (online)
-//      - hämta/uppdatera arrayen med senaste från json bin
+//      - se om det finns ej synkade bilder från LS
+//      - hämta/uppdatera arrayen med senaste från BIN
 // - ANNARS
 //      - hämta LS arrayen
-// - filtrera ut alla (och lägg i ny array) som inte matchar inskickad bild
+// - filtrera ut (och lägg i ny array) alla som inte matchar inskickad bild
 // - spara nya arrayen i LS
 // - kalla på notis
-// - OM (online)
-//      - kalla på synka med json bin
+// - kalla på loadPhotos()
+
 async function removeImage(inImage){
     let updatedArray = [];
     if(navigator.onLine){
+        await syncBin()
         updatedArray = await getPhotosFromBin();
     } else {
         updatedArray = JSON.parse(localStorage.getItem('weddingGallery'));
@@ -124,11 +116,7 @@ async function removeImage(inImage){
     })
     localStorage.setItem('weddingGallery', JSON.stringify(updatedArray));
     createNotification ('Ditt foto är raderat')
-    if(navigator.onLine){
-        loadPhotos(await syncBin());
-    } else {
-        loadPhotos();
-    };
+    loadPhotos();
 };
 
 
@@ -148,7 +136,7 @@ function createGallery(images){
 
 
 /* HÄMTAR BILDERNA JSON BIN */
-// - kör fetch mot json bin och skicka med nyckel
+// - kör fetch mot BIN och skicka med nyckel
 // - lagra responsen i variabel
 // - returnera det som hämtats
 async function getPhotosFromBin() {
@@ -163,15 +151,15 @@ async function getPhotosFromBin() {
 
 
 /* SYNKA MOT JSON BIN */
-// - hämta senaste från json bin
-// - hämta senaste från ls
-// - för varje objekt(bild) i ls pusha in i json bin variabeln
+// - hämta senaste från BIN
+// - hämta senaste från LS
+// - spinner för väntan
+// - ta kopia på LS och lägg i BIN
 // - kör fetchen där hela den nya imagesBin skickas som body
 // - ta emot responsen
-
 async function syncBin() {
     console.log('Dina bilder synkas...')
-    gallery.innerHTML = '<span class="modal-loader"><i class="fa fa-spinner fa-spin"></i></span>'
+    gallery.innerHTML = '<span class="spinner"><i class="fa fa-spinner fa-spin"></i></span>'
     let imagesBin = await getPhotosFromBin()
     const imagesLs = JSON.parse(localStorage.getItem('weddingGallery'));
     imagesBin = [...imagesLs]
@@ -193,18 +181,18 @@ async function syncBin() {
 /* VÄLJER VART VI SKA HÄMTA BILDERNA TILL GALLERIET */
 // - hämta ev bilder från LS
 // - OM (online)
-//      synka bilderna 
-//      lägg i visningsarray
-//      kalla på funktion createGallery(visningsarray)
+//      - se om det finns ej synkade bilder från LS
+//      - hämta hem BIN och lägg i visningsarray
+//      - kalla på funktion createGallery(visningsarray)
 // - ANNARS OM (det finns bilder i LS)
-//      lägg i visningsarray
-//      kalla på funktion createGallery(visningsarray)    
+//      - lägg i visningsarray
+//      - kalla på funktion createGallery(visningsarray)    
 // - ANNARS
-//      printa "No pics" text i innerHTML
-
+//      - printa "No pics" text i innerHTML
 async function loadPhotos() {
     const imagesFromLs = JSON.parse(localStorage.getItem('weddingGallery'));
     if(navigator.onLine){
+        await syncBin();
         console.log('Du är online, dina bilder hämtas från JSON bin')
         imgArray = await getPhotosFromBin();
         createGallery(imgArray)

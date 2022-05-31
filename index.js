@@ -154,7 +154,8 @@ async function getPhotosFromBin() {
 // - hämta senaste från BIN
 // - hämta senaste från LS
 // - spinner för väntan
-// - ta kopia på LS och lägg i BIN
+// - OM det finns bilder i LS
+//      - ta kopia på LS och lägg i BIN
 // - kör fetchen där hela den nya imagesBin skickas som body
 // - ta emot responsen
 async function syncBin() {
@@ -162,8 +163,9 @@ async function syncBin() {
     gallery.innerHTML = '<span class="spinner"><i class="fa fa-spinner fa-spin"></i></span>'
     let imagesBin = await getPhotosFromBin()
     const imagesLs = JSON.parse(localStorage.getItem('weddingGallery'));
-    imagesBin = [...imagesLs]
-    
+    if (imagesLs){
+        imagesBin = [...imagesLs]
+    }
     const response = await fetch('https://api.jsonbin.io/b/6290ee9d449a1f3821f1ce1d', {
         method: 'PUT',
         body: JSON.stringify({images: imagesBin}),

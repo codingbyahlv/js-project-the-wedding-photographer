@@ -1,9 +1,14 @@
 const API_KEY = '$2b$10$yW3fxf3SBSr.INGd5k9.qOK.2PnvlpAj2aWBcvRfui9vcAurz2HN6'
 //const API_KEY = process.env.API_KEY;
 
-
 const introPage = document.querySelector("#intro-page-section");
 const headerElem = document.querySelector("#header-wrapper");
+const mainElem = document.querySelector("#main-wrapper");
+
+const noticeBtn = document.querySelector("#turn-on-off-notice-btn");
+let noticePermission;
+const menuBtn = document.querySelector("#menu-btn");
+let galleryOpen = false;
 
 const takePhotoElem = document.querySelector("#take-photo-section");
 const video = document.querySelector("#camera");
@@ -16,18 +21,11 @@ const newPhotoBtn = document.querySelector("#new-photo-btn");
 const galleryElem = document.querySelector("#gallery-section")
 const gallery = document.querySelector("#gallery");
 const removeBtn = document.querySelector("#remove-btn")
-
-const menuBtn = document.querySelector("#menu-btn");
-let galleryOpen = false;
+const updateGalleryBtn = document.querySelector("#update-gallery-btn")
 
 const ctx = canvas.getContext('2d');
 let stream;
-
 let imgArray = [];
-
-//behövs denna ens????????
-//variabel som ska hålla "svaret" användaren ger angående tillåtelse att skicka notiser
-// let notificationPermission = '';
 
 
 /* VIEW - VISA TAGEN BILD */
@@ -35,23 +33,25 @@ function openYourPhoto() {
     takePhotoElem.style.display = "none";
     yourPhotoElem.style.display = "flex";
 }
+
+
+
 /* VIEW - TA NY BILD */
 function openTakePhoto() {
     takePhotoElem.style.display = "flex";
     headerElem.style.display = "flex";
+    mainElem.style.display = "flex";
     yourPhotoElem.style.display = "none";
     introPage.style.display = "none";
 }
+
+
 
 /* TILLBAKA TILL KAMERAN */
 // - onclick för att öppna funktionen för att ta en ny bild
 newPhotoBtn.addEventListener('click', () => openTakePhoto());
 
 
-
-//OBS!!!! 
-//Lägg in en else för offline
-// KLAR??
 
 /* SPARAR NY BILD I LS (ny bild fr. onklick på "ta bild-knapp")*/
 // - OM (online)
@@ -100,7 +100,6 @@ takePhotoBtn.addEventListener('click', () => {
 // - spara nya arrayen i LS
 // - kalla på notis
 // - kalla på loadPhotos()
-
 async function removeImage(inImage){
     let updatedArray = [];
     if(navigator.onLine){
@@ -120,9 +119,10 @@ async function removeImage(inImage){
 };
 
 
+
 /* VIEW - SKAPAR GALLERIET (bildarray fr. loadPhotos)*/
 // - töm ev kvarvarande bilder
-// - mappa ut alla bilder i arrayen inkl onclick för att ta bort
+// - mappa ut alla bilder i arrayen inkl onclick(bildens data) för att ta bort
 function createGallery(images){
     gallery.innerHTML = '';
     gallery.innerHTML = images
@@ -133,6 +133,7 @@ function createGallery(images){
             </div>`)
         .join("");
 };
+
 
 
 /* HÄMTAR BILDERNA JSON BIN */
@@ -148,6 +149,7 @@ async function getPhotosFromBin() {
     const imagesFromBin = await response.json();
     return imagesFromBin.images;
 };
+
 
 
 /* SYNKA MOT JSON BIN */
@@ -180,6 +182,7 @@ async function syncBin() {
 }
 
 
+
 /* VÄLJER VART VI SKA HÄMTA BILDERNA TILL GALLERIET */
 // - hämta ev bilder från LS
 // - OM (online)
@@ -194,6 +197,7 @@ async function syncBin() {
 async function loadPhotos() {
     const imagesFromLs = JSON.parse(localStorage.getItem('weddingGallery'));
     if(navigator.onLine){
+        updateGalleryBtn.style.display = "none"
         await syncBin();
         console.log('Du är online, dina bilder hämtas från JSON bin')
         imgArray = await getPhotosFromBin();
@@ -202,11 +206,13 @@ async function loadPhotos() {
         console.log('Du är offline, dina bilder hämtas från LS')
         imgArray = [...imagesFromLs]
         createGallery(imgArray)
+        updateGalleryBtn.style.display = "inline"
     } else {
         console.log('Du har inga bilder än')
         gallery.innerHTML = `<h3 class="no-pics-message">Du har inga bilder i galleriet ännu</h3>`
     } 
 }
+
 
 
 /* KLICK PÅ KAMERA/GALLERI KNAPPEN */
@@ -228,11 +234,13 @@ menuBtn.addEventListener('click',() => {
 });
 
 
+
 /* SKAPAR NOTIS (text som skickas med vid resp ändamål) */
 function createNotification(text) {
     const icon = 'icons/icon-192.png'
     const notification = new Notification('Notis', { body: text, icon: icon });
 };
+
 
 
 /* STARTAR KAMERAN NÄR APPEN LADDAS */
@@ -242,8 +250,37 @@ window.addEventListener('load', async () => {
         video.srcObject = stream;
     }
 
-    Notification.requestPermission()
+    if (Notification.permission === "granted"){
+        noticeBtn.innerHTML = '<span class="iconify-inline" data-icon="carbon:notification" style="color: white;" data-width="30"></span>'
+    }
+    //Notification.requestPermission()
 });
+
+
+
+function notificationPermission(){
+    Notification.requestPermission()
+        .then((permission) => { 
+            if (permission === "granted"){
+                console.log('Permission granted')
+                noticePermission = true;
+                noticeBtn.innerHTML = '<span class="iconify-inline" data-icon="carbon:notification" style="color: white;" data-width="30"></span>'
+                if (!galleryOpen){
+                    openTakePhoto()
+                    galleryElem.style.display = "none"
+                } 
+            } else {
+                console.log('No permission for notifications')
+                noticePermission = false;
+            }
+        })
+};
+
+
+/* KLICK PÅ NOTISKNAPPEN */
+// - öppna notificationPermission
+noticeBtn.addEventListener('click', () => notificationPermission())
+
 
 
 //Registrera SW
@@ -258,14 +295,15 @@ window.addEventListener('load', async () => {
 });
 
 
-//FÖRDRÖJNING FÖR ATT VISA INTROSIDAN
+/* FÖRDRÖJNING FÖR ATT VISA INTROSIDAN */
 window.addEventListener('load', () => {
     setTimeout(() => {
         openTakePhoto()
         }, 2000);
 })
 
-
+//För bättre Prestanda kan man skippa Introt och instället starta appen direkt
+// openTakePhoto()
 
 
 
@@ -432,3 +470,8 @@ async function loadPhotos() {
 
     // //synka med bin
     // syncBin();
+
+
+    //behövs denna ens????????
+//variabel som ska hålla "svaret" användaren ger angående tillåtelse att skicka notiser
+// let notificationPermission = '';

@@ -7,7 +7,10 @@
     <title>BRÖLLOPSFOTOGRAFEN</title>
     <meta name="Bröllopsfotografen" content="Hjälper dina gäster att föreviga din dag">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Fotoapp för din stora dag">
+    <meta name="theme-color" content="#2A2E30"/>
     <link rel="icon" type="image/png" href="./icons/icon-192.png"/>
+    <link rel="apple-touch-icon" type="image/png" href="./icons/icon-192.png">
     <link rel="stylesheet" href="./styles/style.css">
     <link rel="manifest" href="./manifest.json">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,14 +26,11 @@
     </section>
 
     <header id="header-wrapper">
-      <!-- <article class="logo-wrapper">
-        <img class="logo-img" src="./img/logo.png" alt="" />
-        <h1 class="logo-h1">Bröllopsfotografen</h1>
-      </article> -->
-      <button id="menu-btn"><span class="iconify" data-icon="bi:grid-fill" style="color: white;" data-width="40"></span></button>
+      <button id="turn-on-off-notice-btn" aria-label="Turn on/off notifications"><span class="iconify-inline" data-icon="carbon:notification-off" style="color: white;" data-width="30"></span></button>
+      <button id="menu-btn" aria-label="To gallery/camera"><span class="iconify" data-icon="bi:grid-fill" style="color: white;" data-width="40"></span></button>
     </header>
 
-    <main class="main-wrapper">
+    <main id="main-wrapper">
       <section id="take-photo-section">
         <video src="" id="camera" autoplay></video>
         <button id="take-photo-btn" class="camera-button">Föreviga ett ögonblick</button>       
@@ -42,6 +42,10 @@
       </section>
 
       <section id="gallery-section">
+        <button id="update-gallery-btn" class="update-gallery" onclick="loadPhotos()">
+          <span class="update-gallery-text">Du saknar internetanslutning</span>
+          <p>Tryck här för att uppdatera</p>
+        </button>
         <article id="gallery">
           <span class="spinner"><i class="fa fa-spinner fa-spin"></i></span>
         </article>

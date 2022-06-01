@@ -3,6 +3,7 @@
   "short_name": "Fotografen",
   "display": "standalone",
   "theme_color": "#2A2E30",
+  "background_color": "#2A2E30",
   "start_url": "/",
   "icons": [
     {

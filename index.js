@@ -98,7 +98,7 @@ takePhotoBtn.addEventListener('click', () => {
 //      - hämta LS arrayen
 // - filtrera ut (och lägg i ny array) alla som inte matchar inskickad bild
 // - spara nya arrayen i LS
-// - kalla på notis
+// - kalla på notis(texten vi vill skriva ut)
 // - kalla på loadPhotos()
 async function removeImage(inImage){
     let updatedArray = [];
@@ -160,6 +160,10 @@ async function getPhotosFromBin() {
 //      - ta kopia på LS och lägg i BIN
 // - kör fetchen där hela den nya imagesBin skickas som body
 // - ta emot responsen
+// - OM lyckad sync
+//       - logga lyckat synk
+// - ANNARS
+//      - logga misslyckat synk
 async function syncBin() {
     console.log('Dina bilder synkas...')
     gallery.innerHTML = '<span class="spinner"><i class="fa fa-spinner fa-spin"></i></span>'
@@ -176,11 +180,13 @@ async function syncBin() {
             'X-Master-Key': API_KEY
         }
     });
-
     const data = await response.json();
-    console.log('Dina bilder är nu synkade!', data)    
-}
-
+    if(data.success === true){
+        console.log('Dina bilder är nu synkade :)')   
+    } else {
+        console.log('Oh no syncing problems')
+    }
+};
 
 
 /* VÄLJER VART VI SKA HÄMTA BILDERNA TILL GALLERIET */
@@ -238,23 +244,9 @@ menuBtn.addEventListener('click',() => {
 /* SKAPAR NOTIS (text som skickas med vid resp ändamål) */
 function createNotification(text) {
     const icon = 'icons/icon-192.png'
-    const notification = new Notification('Notis', { body: text, icon: icon });
+    new Notification('Notis', { body: text, icon: icon });
+    //const notification = new Notification('Notis', { body: text, icon: icon });
 };
-
-
-
-/* STARTAR KAMERAN NÄR APPEN LADDAS */
-window.addEventListener('load', async () => {
-    if ('mediaDevices' in navigator) {
-        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false});
-        video.srcObject = stream;
-    }
-
-    if (Notification.permission === "granted"){
-        noticeBtn.innerHTML = '<span class="iconify-inline" data-icon="carbon:notification" style="color: white;" data-width="30"></span>'
-    }
-    //Notification.requestPermission()
-});
 
 
 
@@ -282,6 +274,33 @@ function notificationPermission(){
 noticeBtn.addEventListener('click', () => notificationPermission())
 
 
+/* STARTAR KAMERAN NÄR APPEN LADDAS */
+window.addEventListener('load', async () => {
+    if ('mediaDevices' in navigator) {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false});
+        video.srcObject = stream;
+    }
+    if (Notification.permission === "granted"){
+        noticeBtn.innerHTML = '<span class="iconify-inline" data-icon="carbon:notification" style="color: white;" data-width="30"></span>'
+    }
+});
+
+
+/* SE OM PERMISSION FÖR NOTISER FINNS NÄR APPEN STARTAR */
+window.addEventListener('load', () => {
+    if (Notification.permission === "granted"){
+        noticeBtn.innerHTML = '<span class="iconify-inline" data-icon="carbon:notification" style="color: white;" data-width="30"></span>'
+    }
+});
+
+
+/* FÖRDRÖJNING FÖR ATT VISA INTROSIDAN */
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        openTakePhoto()
+        }, 2000);
+})
+
 
 //Registrera SW
 window.addEventListener('load', async () => {
@@ -294,16 +313,9 @@ window.addEventListener('load', async () => {
   }
 });
 
-
-/* FÖRDRÖJNING FÖR ATT VISA INTROSIDAN */
-window.addEventListener('load', () => {
-    setTimeout(() => {
-        openTakePhoto()
-        }, 2000);
-})
-
-//För bättre Prestanda kan man skippa Introt och instället starta appen direkt
+//För bättre Prestanda kan man skippa Introt och instället starta appen direkt med...
 // openTakePhoto()
+
 
 
 

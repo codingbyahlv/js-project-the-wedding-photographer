@@ -1,5 +1,4 @@
 const API_KEY = '$2b$10$yW3fxf3SBSr.INGd5k9.qOK.2PnvlpAj2aWBcvRfui9vcAurz2HN6'
-//const API_KEY = process.env.API_KEY;
 
 const introPage = document.querySelector("#intro-page-section");
 const headerElem = document.querySelector("#header-wrapper");
@@ -35,7 +34,6 @@ function openYourPhoto() {
 }
 
 
-
 /* VIEW - TA NY BILD */
 function openTakePhoto() {
     takePhotoElem.style.display = "flex";
@@ -46,11 +44,9 @@ function openTakePhoto() {
 }
 
 
-
 /* TILLBAKA TILL KAMERAN */
 // - onclick för att öppna funktionen för att ta en ny bild
 newPhotoBtn.addEventListener('click', () => openTakePhoto());
-
 
 
 /* SPARAR NY BILD I LS (ny bild fr. onklick på "ta bild-knapp")*/
@@ -89,7 +85,6 @@ takePhotoBtn.addEventListener('click', () => {
 });
 
 
-
 /* TA BORT KLICKAD BILD */
 // - OM (online)
 //      - se om det finns ej synkade bilder från LS
@@ -119,7 +114,6 @@ async function removeImage(inImage){
 };
 
 
-
 /* VIEW - SKAPAR GALLERIET (bildarray fr. loadPhotos)*/
 // - töm ev kvarvarande bilder
 // - mappa ut alla bilder i arrayen inkl onclick(bildens data) för att ta bort
@@ -135,7 +129,6 @@ function createGallery(images){
 };
 
 
-
 /* HÄMTAR BILDERNA JSON BIN */
 // - kör fetch mot BIN och skicka med nyckel
 // - lagra responsen i variabel
@@ -149,7 +142,6 @@ async function getPhotosFromBin() {
     const imagesFromBin = await response.json();
     return imagesFromBin.images;
 };
-
 
 
 /* SYNKA MOT JSON BIN */
@@ -172,7 +164,7 @@ async function syncBin() {
     if (imagesLs){
         imagesBin = [...imagesLs]
     }
-    const response = await fetch('https://api.jsonbin.io/b/6290ee9d449a1f3821f1ce1d', {
+    const response = await fetch('https://api.jsonbin.io/b/6290ee9d449a1f3821f1ce1d/', {
         method: 'PUT',
         body: JSON.stringify({images: imagesBin}),
         headers: {
@@ -220,7 +212,6 @@ async function loadPhotos() {
 }
 
 
-
 /* KLICK PÅ KAMERA/GALLERI KNAPPEN */
 menuBtn.addEventListener('click',() => {
     if (!galleryOpen){
@@ -240,38 +231,65 @@ menuBtn.addEventListener('click',() => {
 });
 
 
-
 /* SKAPAR NOTIS (text som skickas med vid resp ändamål) */
 function createNotification(text) {
     const icon = 'icons/icon-192.png'
-    new Notification('Notis', { body: text, icon: icon });
-    //const notification = new Notification('Notis', { body: text, icon: icon });
+    if(noticePermission){
+        new Notification('Notis', { body: text, icon: icon });
+    }
 };
 
 
-
+/* FRÅGA OM PERMISSION ATT VISA NOTISER I WEBBLÄSAREN */
+// - anropa notification.requestPermission
+// - sen - permission som kommer tillbaka
+// - OM (permission = granted/tillåter notiser)
+//      - kalla på funktion som togglar permission boolean
 function notificationPermission(){
     Notification.requestPermission()
         .then((permission) => { 
             if (permission === "granted"){
-                console.log('Permission granted')
-                noticePermission = true;
-                noticeBtn.innerHTML = '<span class="iconify-inline" data-icon="carbon:notification" style="color: white;" data-width="30"></span>'
-                if (!galleryOpen){
-                    openTakePhoto()
-                    galleryElem.style.display = "none"
-                } 
-            } else {
-                console.log('No permission for notifications')
-                noticePermission = false;
+                noticeToggler(); 
             }
         })
 };
 
 
+/* TOGGLA MELLAN PÅ/AV NOTISER OCH IKON */
+// - sätt notisPermission till det den inte är
+// - OM (inte permission)
+//      - byt ikonen till att det är avstängt
+//      - OM (galleriet inte är öppet/står på kamerasidan)
+//          - öppna ta kort sidan
+//          - göm galleriet
+// - ANNARS
+//      - byt ikon till att notiser är på
+//      - OM (galleriet inte är öppet/står på kamerasidan)
+//          - öppna ta kort sidan
+//          - göm galleriet
+function noticeToggler () {
+    noticePermission = !noticePermission
+    if (!noticePermission){
+        console.log('Notiser stängs av')
+        noticeBtn.innerHTML = '<span class="iconify-inline" data-icon="carbon:notification-off" style="color: white;" data-width="30"></span>'
+        if (!galleryOpen){
+            openTakePhoto()
+            galleryElem.style.display = "none"
+        } 
+    } else {
+        console.log('Notiser sätts på')
+        noticeBtn.innerHTML = '<span class="iconify-inline" data-icon="carbon:notification" style="color: white;" data-width="30"></span>'
+        if (!galleryOpen){
+            openTakePhoto()
+            galleryElem.style.display = "none"
+        } 
+    }
+}
+
+
 /* KLICK PÅ NOTISKNAPPEN */
 // - öppna notificationPermission
-noticeBtn.addEventListener('click', () => notificationPermission())
+noticeBtn.addEventListener('click', () => notificationPermission());
 
 
 /* STARTAR KAMERAN NÄR APPEN LADDAS */
@@ -280,29 +298,27 @@ window.addEventListener('load', async () => {
         stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false});
         video.srcObject = stream;
     }
-    if (Notification.permission === "granted"){
-        noticeBtn.innerHTML = '<span class="iconify-inline" data-icon="carbon:notification" style="color: white;" data-width="30"></span>'
-    }
 });
 
 
-/* SE OM PERMISSION FÖR NOTISER FINNS NÄR APPEN STARTAR */
+/* SE OM PERMISSION FÖR NOTISER REDAN FINNS NÄR APPEN STARTAR */
 window.addEventListener('load', () => {
     if (Notification.permission === "granted"){
+        noticePermission = true;
         noticeBtn.innerHTML = '<span class="iconify-inline" data-icon="carbon:notification" style="color: white;" data-width="30"></span>'
     }
 });
 
 
 /* FÖRDRÖJNING FÖR ATT VISA INTROSIDAN */
-window.addEventListener('load', () => {
-    setTimeout(() => {
-        openTakePhoto()
-        }, 2000);
-})
+// window.addEventListener('load', () => {
+//     setTimeout(() => {
+//         openTakePhoto()
+//         }, 2000);
+// })
 
 
-//Registrera SW
+/* REGISTRERA SERVICE WORKERS */
 window.addEventListener('load', async () => {
   if('serviceWorker' in navigator){
       try {
@@ -314,176 +330,4 @@ window.addEventListener('load', async () => {
 });
 
 //För bättre Prestanda kan man skippa Introt och instället starta appen direkt med...
-// openTakePhoto()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* SKAPAR BILDERNA I GALLERIET */
-// function createPhoto(image) {
-//     const photoElem = document.createElement('img');
-//     photoElem.setAttribute('src', image.image)
-//     photoElem.setAttribute('class', 'taken-img')
-//     gallery.append(photoElem);
-// }
-
-    // //pushar in i vår globala images 
-    // images.push({ id: images.length, image: imageData });
-    // //lagrar global images i LS
-    // localStorage.setItem('weddingGallery', JSON.stringify(images));
-
-
-
-    // function removeImage(inImage){
-    //     // console.log(id)
-    //     // console.log(typeof id)
-    //     console.log('Remove klickad')
-    //     //hämta in id som skickas med. gör om inkommande sträng id till en int så det går att jämföra med
-    //     // inId = parseInt(id)
-    //     //hämta arrayen som ska jämföras med
-    //     let newImagesArray = JSON.parse(localStorage.getItem('weddingGallery'));
-    //     //filtrera ut alla (och lägg i ny array) som inte matchar inskickat id
-    //     newImagesArray = newImagesArray.filter((image) => {
-    //         // if (image.id !== inId) {
-    //         //     return image;
-    //         // }
-    //         console.log(typeof image.image)
-    //               if (image.image !== inImage) {
-    //              return image;
-    //          }
-    //     })
-    //     //spara ny array i LS
-    //     localStorage.setItem('weddingGallery', JSON.stringify(newImagesArray));
-    //     //meddela att bilden är borttagen
-    //     console.log('Din bild är nu borttagen')
-    //     //laddar bilder igen
-    //     loadPhotos();
-    
-    //     //synka med bin
-    
-    // }
-
-
-
-//SAVE PHOTO
-
-        //PROBLEM! 
-    //kan inte läsa längden när den är tom. object?
-    //******
-    // //läs in LS
-    // const imagesFromLs = JSON.parse(localStorage.getItem('weddingGallery'));
-    // console.log(typeof imagesFromLs)
-    // //pusha in ny bild
-    // imagesFromLs.push({ id: imagesFromLs.length, image: newPhoto });
-    // //uppdatera LS
-    // localStorage.setItem('weddingGallery', JSON.stringify(imagesFromLs));
-
-    //PROBLEM! 
-    //alla gamla bilder kommer tillbaka när en ny bild tas
-    //******
-    //pushar in i vår globala imagesArray 
-    // imagesArray.push({ id: imagesArray.length, image: newPhoto });
-    // //lagrar global imagesArray i LS
-    // localStorage.setItem('weddingGallery', JSON.stringify(imagesArray));
-    //createNotification ('Ditt foto är sparat')
-    //synka med bin
-    //syncBin()
-
-
-    /*
-async function loadPhotos() {
-    imagesFromLs = JSON.parse(localStorage.getItem('weddingGallery'));
-
-    if (navigator.onLine){
-        console.log('loadPhotos: Du är online, dina bilder hämtas från JSON bin')
-        const imagesFromBin = await getPhotosFromBin();
-        //skicka in BIN bilderna i createGallery
-        createGallery(imagesFromBin);
-    } else if (imagesFromLs){
-        console.log('loadPhotos: Du är offline, dina bilder hämtas från LS')
-        //skicka in LS bilderna i createGallery
-        createGallery(imagesFromLs);
-    } else {
-        console.log('loadPhotos: Du har inga bilder än')
-        gallery.innerHTML = `<h3 class="no-pics-message">Du har inga bilder i galleriet ännu</h3>`
-    } 
-}
-*/
-
-
-// /* SKAPAR NOTIS (text som skickas med vid resp ändamål) */
-// function createNotification(text) {
-//     //Behövs denna ens???
-//     // if (notificationPermission === 'granted') {
-//     //     const icon = 'icons/icon-192.png'
-//     //     const notification = new Notification('Notis', { body: text });
-//     // }
-
-//     const icon = 'icons/icon-192.png'
-//     const notification = new Notification('Notis', { body: text, icon: icon });
-    
-
-//     // //om vi vill att det ska hända något när vi trycker på notisen
-//     // notification.addEventListener('click', () => {
-//     //     //här öppnar vi ett nytt fönster av vår sida
-//     //     window.open('https://localhost:443');
-//     // });
-// };
-
-
-// /* STARTAR KAMERAN NÄR APPEN LADDAS */
-// window.addEventListener('load', async () => {
-//     if ('mediaDevices' in navigator) {
-//         stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false});
-//         video.srcObject = stream;
-//     }
-
-//     Notification.requestPermission()
-//         //behövs detta ens????
-//         // .then((permission) => {
-//         //     //testlogg
-//         //     console.log(permission)
-//         //     //sätter vår tidigare deklarerar variabel till utfallet
-//         //     notificationPermission = permission;
-//         // });
-// });
-
-//remove
-
-    // //hämta arrayen som ska jämföras med
-    // let newImagesArray = JSON.parse(localStorage.getItem('weddingGallery'));
-    // //filtrera ut alla (och lägg i ny array) som inte matchar inskickat id
-    // newImagesArray = newImagesArray.filter((image) => {
-    //     if (image.image !== inImage) {
-    //         return image;
-    //     }
-    // })
-    // //spara ny array i LS
-    // localStorage.setItem('weddingGallery', JSON.stringify(newImagesArray));
-    // //meddela att bilden är borttagen
-    // createNotification ('Ditt foto är raderat')
-    // //laddar bilder igen
-    // loadPhotos();
-
-    // //synka med bin
-    // syncBin();
-
-
-    //behövs denna ens????????
-//variabel som ska hålla "svaret" användaren ger angående tillåtelse att skicka notiser
-// let notificationPermission = '';
+openTakePhoto()

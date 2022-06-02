@@ -1,0 +1,1 @@
+Synkroniseringen mot JSON Bin är något långsam. Vänligen vänta in notis att din bild är sparad innan du klickar dig vidare mot galleriet. Då fungerar allt som det ska :)

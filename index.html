@@ -25,33 +25,34 @@
         <h1 class="intro-logo-h1">Bröllopsfotografen</h1>
     </section>
 
-    <header id="header-wrapper">
-      <button id="turn-on-off-notice-btn" aria-label="Turn on/off notifications"><span class="iconify-inline" data-icon="carbon:notification-off" style="color: white;" data-width="30"></span></button>
-      <button id="menu-btn" aria-label="To gallery/camera"><span class="iconify" data-icon="bi:grid-fill" style="color: white;" data-width="40"></span></button>
-    </header>
+    <div class="page-wrapper">
+      <header id="header-wrapper">
+        <button id="turn-on-off-notice-btn" aria-label="Turn on/off notifications"><span class="iconify-inline" data-icon="carbon:notification-off" style="color: white;" data-width="30"></span></button>
+        <button id="menu-btn" aria-label="To gallery/camera"><span class="iconify" data-icon="bi:grid-fill" style="color: white;" data-width="40"></span></button>
+      </header>
 
-    <main id="main-wrapper">
-      <section id="take-photo-section">
-        <video src="" id="camera" autoplay></video>
-        <button id="take-photo-btn" class="camera-button">Föreviga ett ögonblick</button>       
-      </section>
+      <main id="main-wrapper">
+        <section id="take-photo-section">
+          <video src="" id="camera" autoplay></video>
+          <button id="take-photo-btn" class="camera-button">Föreviga ett ögonblick</button>       
+        </section>
 
-      <section id="your-photo-section">
-        <canvas id="picture"></canvas>
-        <button id="new-photo-btn" class="camera-button">Ta nytt kort</button>
-      </section>
+        <section id="your-photo-section">
+          <canvas id="picture"></canvas>
+          <button id="new-photo-btn" class="camera-button">Ta nytt kort</button>
+        </section>
 
-      <section id="gallery-section">
-        <button id="update-gallery-btn" class="update-gallery" onclick="loadPhotos()">
-          <span class="update-gallery-text">Du saknar internetanslutning</span>
-          <p>Tryck här för att uppdatera</p>
-        </button>
-        <article id="gallery">
-          <span class="spinner"><i class="fa fa-spinner fa-spin"></i></span>
-        </article>
-      </section>
-    </main>
-    
+        <section id="gallery-section">
+          <button id="update-gallery-btn" class="update-gallery" onclick="loadPhotos()">
+            <span class="update-gallery-text">Du saknar internetanslutning</span>
+            <p>Tryck här för att uppdatera</p>
+          </button>
+          <article id="gallery">
+            <span class="spinner"><i class="fa fa-spinner fa-spin"></i></span>
+          </article>
+        </section>
+      </main>
+    </div>
     <script src="./index.js" async defer></script>
   </body>
 </html>

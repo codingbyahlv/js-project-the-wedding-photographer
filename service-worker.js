@@ -14,6 +14,7 @@ self.addEventListener('install', (event) => {
   console.log('Installed service worker at ', new Date().toLocaleTimeString());
 });
 
+
 /* AKTIVERAR SW */
 // - SkipWaiting
 // - logga att SW är aktiverad
@@ -21,6 +22,7 @@ self.addEventListener('activate', (event) => {
   self.skipWaiting();
   console.log('Activated at ', new Date().toLocaleTimeString());
 });
+
 
 /* VID VARJE REQUEST */
 // triggas så fort vi gör en nätverksförfrågan/request
@@ -52,6 +54,7 @@ self.addEventListener('fetch', async (event) => {
     const response = await updateCache(event.request);
     return response;
   }
+
 
   /* UPPDATERA CACHE */
   // - vi gör en request och lagrar responsen

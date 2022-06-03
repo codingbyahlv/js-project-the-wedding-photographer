@@ -311,11 +311,11 @@ window.addEventListener('load', () => {
 
 
 /* FÖRDRÖJNING FÖR ATT VISA INTROSIDAN */
-// window.addEventListener('load', () => {
-//     setTimeout(() => {
-//         openTakePhoto()
-//         }, 2000);
-// })
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        openTakePhoto()
+        }, 2000);
+})
 
 
 /* REGISTRERA SERVICE WORKERS */
@@ -330,4 +330,4 @@ window.addEventListener('load', async () => {
 });
 
 //För bättre Prestanda kan man skippa Introt och instället starta appen direkt med...
-openTakePhoto()
+// openTakePhoto()
